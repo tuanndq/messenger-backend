@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-const conversationSchema = new mongoose.Schema({
+const ConversationSchema = new mongoose.Schema({});
 
-});
-
-module.exports = mongoose.model('Conversation', conversationSchema);
+module.exports = mongoose.model("Conversation", ConversationSchema);

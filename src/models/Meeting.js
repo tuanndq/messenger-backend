@@ -1,7 +1,5 @@
 const mongoose = require("mongoose");
 
-const meetingSchema = new mongoose.Schema({
+const MeetingSchema = new mongoose.Schema({});
 
-});
-
-module.exports = mongoose.model('Meeting', meetingSchema);
+module.exports = mongoose.model("Meeting", MeetingSchema);
