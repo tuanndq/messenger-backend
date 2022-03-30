@@ -1,5 +1,25 @@
 const mongoose = require("mongoose");
 
-const MeetingSchema = new mongoose.Schema({});
+const meetingSchema = new mongoose.Schema({
+  conversationId: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
 
-module.exports = mongoose.model("Meeting", MeetingSchema);
+  hostId: {
+    type: mongoose.Types.ObjectId,
+    required: true,
+  },
+
+  createdDate: {
+    type: Date,
+    default: Date.now,
+  },
+
+  isActive: {
+    type: Boolean,
+    default: false,
+  },
+});
+
+module.exports = mongoose.model("Meeting", meetingSchema);
