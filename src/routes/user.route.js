@@ -1,10 +1,10 @@
 const router = require("express").Router();
 const userCtrl = require("../controllers/user.controller");
 
-router.get("/", userCtrl.getUser);
+router.get("/", userCtrl.getUserById);
 
-router.post("/", userCtrl.createUser);
+router.patch("/", userCtrl.updateInfoUser);
 
-router.get("/:id", userCtrl.getUserById);
+router.patch("/privacy", userCtrl.updatePrivacyUser);
 
 module.exports = router;

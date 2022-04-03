@@ -38,7 +38,7 @@ io.on("connection", (socket) => {
 
 // ROUTES
 app.use("/api/auth", require("./src/routes/auth.route"));
-// app.use("/api/user", auth, require("./src/routes/user.route"));
+app.use("/api/user", auth, require("./src/routes/user.route"));
 
 const port = process.env.PORT || 5000;
 http.listen(port, () => {
