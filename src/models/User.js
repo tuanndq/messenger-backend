@@ -1,5 +1,7 @@
 const mongoose = require("mongoose");
 
+const enumMessenger = require('../utils/enum');
+
 const UserSchema = new mongoose.Schema(
   {
     email: {
@@ -8,37 +10,47 @@ const UserSchema = new mongoose.Schema(
       unique: true,
       lowercase: true,
     },
+
     password: {
       type: String,
       required: true,
       minlength: 8,
     },
+    
     firstName: {
       type: String,
       required: true,
     },
+    
     lastName: {
       type: String,
       required: true,
     },
+    
     fullName: {
       type: String,
     },
+    
     gender: {
       type: Number,
       required: true,
+      default: enumMessenger.gender.male,
     },
+    
     dateOfBirth: {
       type: String,
       required: true,
     },
+    
     address: {
       type: String,
     },
+    
     phoneNumber: {
       type: String,
       unique: true,
     },
+    
     avatar: {
       type: String,
       default: function () {
@@ -55,15 +67,19 @@ const UserSchema = new mongoose.Schema(
         return arr[Math.floor(Math.random() * arr.length)];
       },
     },
+    
     wallpaper: {
       type: String,
       default:
         "https://i.pinimg.com/736x/f4/f9/1c/f4f91c394261080ff096d7c7843eb4c7.jpg",
     },
+    
     bio: {
       type: String,
     },
+    
     schools: [{ schoolName: String, major: String, graduated: Boolean }],
+    
     workPlaces: [
       {
         workPlaceName: String,
@@ -71,9 +87,11 @@ const UserSchema = new mongoose.Schema(
         currentlyWorking: Boolean,
       },
     ],
+    
     lives: {
       type: String,
     },
+    
     linked: {
       facebook: {
         type: String,
@@ -94,9 +112,10 @@ const UserSchema = new mongoose.Schema(
     // notWorking -> 2
     userStatus: {
       type: Number,
-      default: 0,
+      default: enumMessenger.userStatus.offline,
     },
   },
+
   {
     timestamps: true,
   }
