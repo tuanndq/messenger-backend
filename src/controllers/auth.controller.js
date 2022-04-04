@@ -2,12 +2,38 @@ const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 
+const resourceMessenger = require("../utils/resource");
+
 const authCtrl = {
   register: async (req, res) => {
     try {
       const { email, password, lastName, firstName, gender, dateOfBirth } =
         req.body;
 
+      // Validate data
+      if (!email) {
+        return res.status(400).json({
+          devMsg: resourceMessenger.msg.err.emailEmptyMsg,
+          userMsg: resourceMessenger.msg.err.emailEmptyMsg,
+        });
+      }
+
+      if (!validateEmail(email)) {
+        return res.status(400).json({
+          devMsg: resourceMessenger.msg.err.emailErrMsg,
+          userMsg: resourceMessenger.msg.err.emailErrMsg,
+        });
+      }
+
+      if (!password) {
+        return res.status(400).json({
+          devMsg: resourceMessenger.msg.err.passEmptyMsg,
+          userMsg: resourceMessenger.msg.err.passEmptyMsg,
+        });
+      }
+
+
+      // Everything is OKAY
       const passwordHash = await bcrypt.hash(password, 12);
 
       const newUser = new User({
@@ -37,7 +63,7 @@ const authCtrl = {
       await newUser.save();
 
       res.json({
-        msg: "Register successfully!",
+        msg: resourceMessenger.msg.success.register,
         access_token,
         user: {
           ...newUser._doc,
@@ -45,7 +71,10 @@ const authCtrl = {
         },
       });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ 
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
     }
   },
 
@@ -57,7 +86,7 @@ const authCtrl = {
 
       if (!user) {
         return res.status(400).json({
-          msg: "Sorry, we can't find an account with this email address. Please try again or create a new account.",
+          msg: resourceMessenger.msg.err.notExistAccount,
         });
       }
 
@@ -65,7 +94,7 @@ const authCtrl = {
 
       if (!isMatch) {
         return res.status(400).json({
-          msg: "Incorrect password. Please try again or you can reset your password.",
+          msg: resourceMessenger.msg.err.wrongPassword,
         });
       }
 
@@ -83,7 +112,7 @@ const authCtrl = {
       // });
 
       res.json({
-        msg: "Login successully!",
+        msg:resourceMessenger.msg.success.login,
         access_token,
         user: {
           ...user._doc,
@@ -91,16 +120,22 @@ const authCtrl = {
         },
       });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ 
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
     }
   },
 
   logout: async (req, res) => {
     try {
       // res.clearCookie("refreshtoken", { path: "/api/refresh_token" });
-      return res.json({ msg: "Logged out." });
+      return res.json({ msg: resourceMessenger.msg.success.logout });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
     }
   },
 };
@@ -116,5 +151,10 @@ const createAccessToken = (payload) => {
 //     expiresIn: "30d",
 //   });
 // };
+
+const validateEmail = (email) => {
+  const regex = resourceMessenger.regex.email;
+	return regex.test(String(email).toLowerCase());
+}
 
 module.exports = authCtrl;

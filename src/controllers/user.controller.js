@@ -1,4 +1,5 @@
 const User = require("../models/User");
+const resourceMessenger = require("../utils/resource");
 
 const authCtrl = {
   getUserById: async (req, res) => {
@@ -6,12 +7,15 @@ const authCtrl = {
       const user = await User.findById(req.user._id).select("-password");
 
       if (!user) {
-        res.status(400).json({ msg: "This user does not exist." });
+        res.status(400).json({ msg: resourceMessenger.msg.err.notExistUser });
       }
 
       res.json(user);
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ 
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
     }
   },
   updateInfoUser: async (req, res) => {
@@ -46,9 +50,12 @@ const authCtrl = {
         linked: linked,
       });
 
-      res.json({ msg: "Update info successfully!" });
+      res.json({ msg: resourceMessenger.msg.success.updateInfo });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({ 
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg, 
+      });
     }
   },
   updatePrivacyUser: async (req, res) => {
@@ -68,9 +75,12 @@ const authCtrl = {
         phoneNumber: phoneNumber,
       });
 
-      res.json({ msg: "Update privacy information of user successfully!" });
+      res.json({ msg: resourceMessenger.msg.success.updatePrivacy });
     } catch (err) {
-      return res.status(500).json({ msg: err.message });
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
     }
   },
 };
