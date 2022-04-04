@@ -5,7 +5,8 @@ const jwt = require("jsonwebtoken");
 const authCtrl = {
   register: async (req, res) => {
     try {
-      const { email, password, lastName, firstName } = req.body;
+      const { email, password, lastName, firstName, gender, dateOfBirth } =
+        req.body;
 
       const passwordHash = await bcrypt.hash(password, 12);
 
@@ -14,6 +15,8 @@ const authCtrl = {
         password: passwordHash,
         lastName,
         firstName,
+        gender,
+        dateOfBirth,
       });
 
       const access_token = createAccessToken({
@@ -49,8 +52,6 @@ const authCtrl = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
-
-      console.log(req.body);
 
       const user = await User.findOne({ email });
 

@@ -1,4 +1,4 @@
-export const resourceMessenger = {
+const resourceMessenger = {
     msg: {
         generalErrMsg: 'Đã có lỗi xảy ra, vui lòng liên hệ chúng tôi để được giúp đỡ!',
         emailErrMsg: 'Email không đúng định dạng, vui lòng nhập lại',
@@ -8,3 +8,5 @@ export const resourceMessenger = {
         authFailMsg: 'Số điện thoại hoặc mật khẩu không đúng',
     },
 };
+
+module.exports = resourceMessenger;

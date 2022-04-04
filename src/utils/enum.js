@@ -1,4 +1,4 @@
-export const enumMessenger = {
+const enumMessenger = {
     gender: {
         male: 0,
         female: 1,
@@ -16,5 +16,6 @@ export const enumMessenger = {
         image: 1,
         file: 2,
     },
-};
+}
 
+module.exports = enumMessenger;

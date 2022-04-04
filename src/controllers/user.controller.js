@@ -1,9 +1,78 @@
 const User = require("../models/User");
 
 const authCtrl = {
-  createUser: {},
-  getUser: {},
-  getUserById: {},
+  getUserById: async (req, res) => {
+    try {
+      const user = await User.findById(req.user._id).select("-password");
+
+      if (!user) {
+        res.status(400).json({ msg: "This user does not exist." });
+      }
+
+      res.json(user);
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  updateInfoUser: async (req, res) => {
+    try {
+      const {
+        lastName,
+        firstName,
+        gender,
+        dateOfBirth,
+        address,
+        avatar,
+        wallpaper,
+        bio,
+        schools,
+        workPlaces,
+        lives,
+        linked,
+      } = req.body;
+
+      console.log(req.body);
+
+      await User.findByIdAndUpdate(req.user._id, {
+        lastName: lastName,
+        firstName: firstName,
+        gender: gender,
+        dateOfBirth: dateOfBirth,
+        address: address,
+        bio: bio,
+        schools: schools,
+        workPlaces: workPlaces,
+        lives: lives,
+        linked: linked,
+      });
+
+      res.json({ msg: "Update info successfully!" });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  updatePrivacyUser: async (req, res) => {
+    try {
+      const { email, password, phoneNumber } = req.body;
+
+      if (password) {
+        const password = await bcrypt.hash(password, 12);
+
+        await User.findByIdAndUpdate(req.user._id, {
+          password: passwordHash,
+        });
+      }
+
+      await User.findByIdAndUpdate(req.user._id, {
+        email: email,
+        phoneNumber: phoneNumber,
+      });
+
+      res.json({ msg: "Update privacy information of user successfully!" });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
 };
 
 module.exports = authCtrl;
