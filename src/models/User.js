@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { enumMessenger } = require("../utils/enum");
 
 const userSchema = new mongoose.Schema({
   phoneNumber: {
@@ -13,15 +14,18 @@ const userSchema = new mongoose.Schema({
     unique: true,
     lowercase: true,
   },
+
   password: {
     type: String,
     required: true,
     minlength: 8,
   },
+
   firstName: {
     type: String,
     required: true,
   },
+
   lastName: {
     type: String,
     required: true,
@@ -38,6 +42,7 @@ const userSchema = new mongoose.Schema({
   gender: {
     type: Number,
     required: true,
+    default: enumMessenger.gender.male,
   },
 
   dateOfBirth: {
@@ -54,8 +59,8 @@ const userSchema = new mongoose.Schema({
   // notWorking -> 2
   userStatus: {
     type: Number,
-    default: 0,
+    default: enumMessenger.userStatus.offline,
   },
 });
 
-module.exports = mongoose.model("User", UserSchema);
+module.exports = mongoose.model("User", userSchema);
