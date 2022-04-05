@@ -22,7 +22,10 @@ const auth = async (req, res, next) => {
     req.user = user;
     next();
   } catch (err) {
-    return res.status(500).json({ msg: err.message });
+    return res.status(500).json({
+      devMsg: err.message,
+      userMsg: resourceMessenger.msg.err.generalUserMsg,
+    });
   }
 };
 

@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { enumMessenger } = require("../utils/enum");
 
 const MessageSchema = new mongoose.Schema({
   conversationId: {
@@ -16,7 +17,7 @@ const MessageSchema = new mongoose.Schema({
   // file -> 2
   msgType: {
     type: Number,
-    default: 0,
+    default: enumMessenger.msgType.text,
   },
 
   content: {
