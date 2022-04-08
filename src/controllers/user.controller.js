@@ -20,6 +20,7 @@ const authCtrl = {
       });
     }
   },
+  
   updateInfoUser: async (req, res) => {
     try {
       const {
@@ -60,6 +61,7 @@ const authCtrl = {
       });
     }
   },
+
   updatePrivacyUser: async (req, res) => {
     try {
       const { email, password, phoneNumber } = req.body;

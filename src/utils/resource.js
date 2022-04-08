@@ -9,6 +9,7 @@ const resourceMessenger = {
             emailEmptyMsg: 'You have not enter your email.',
             passEmptyMsg: 'You have not enter your password.',
             passNotDuplicatedMsg: 'Password does not match.',
+            fileNotFound: 'Error: No files found.',
         },
         success: {
             register: 'Registered successfully.',
@@ -16,11 +17,17 @@ const resourceMessenger = {
             logout: 'Logged out.',
             updateInfo: 'Update info successfully.',
             updatePrivacy: 'Update privacy information of user successfully.',
+            uploadFile: 'File uploaded.',
         },
     },
+
     regex: {
         email: /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/,
     },
+
+    number: {
+        defaultMsg: 20,
+    }
 };
 
 module.exports = resourceMessenger;

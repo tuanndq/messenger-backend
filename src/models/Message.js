@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { enumMessenger } = require("../utils/enum");
+const enumMessenger = require("../utils/enum");
 
 const MessageSchema = new mongoose.Schema({
   conversationId: {
@@ -29,6 +29,11 @@ const MessageSchema = new mongoose.Schema({
     type: Date,
     default: Date.now,
   },
+
+  isDeleted: {
+    type: Boolean,
+    default: false,
+  }
 });
 
 module.exports = mongoose.model("Message", MessageSchema);
