@@ -4,10 +4,8 @@ const firebase = require("../services/firebase");
 const uploadCtrl = {
   uploadImage: async (req, res) => {
     try {
-      console.log(req.file);
       if (!req.file) {
-        res.status(400).send("Error: No files found");
-        console.log("error: no file");
+        return res.status(400).send("Error: No files found");
       }
       let idv4 = uuidv4();
       const blob = firebase.bucket.file(`images/${idv4}`);

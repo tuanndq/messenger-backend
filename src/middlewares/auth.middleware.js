@@ -1,8 +1,10 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
+const resourceMessenger = require("../utils/resource");
 
 const auth = async (req, res, next) => {
   try {
+    // console.log("req: ", req);
     let token;
     if (req.header("Authorization").split(" ").length === 2) {
       token = req.header("Authorization").split(" ")[1];

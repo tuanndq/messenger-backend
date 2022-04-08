@@ -4,15 +4,17 @@ const resourceMessenger = require("../utils/resource");
 const authCtrl = {
   getUserById: async (req, res) => {
     try {
-      const user = await User.findById(req.user._id).select("-password");
+      let user = await User.findById(req.user._id).select("-password");
 
       if (!user) {
-        res.status(400).json({ msg: resourceMessenger.msg.err.notExistUser });
+        return res
+          .status(400)
+          .json({ msg: resourceMessenger.msg.err.notExistUser });
       }
 
-      res.json(user);
+      res.status(200).json(user);
     } catch (err) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         devMsg: err.message,
         userMsg: resourceMessenger.msg.err.generalUserMsg,
       });
@@ -52,9 +54,9 @@ const authCtrl = {
 
       res.json({ msg: resourceMessenger.msg.success.updateInfo });
     } catch (err) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         devMsg: err.message,
-        userMsg: resourceMessenger.msg.err.generalUserMsg, 
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
       });
     }
   },
