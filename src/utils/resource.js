@@ -10,6 +10,8 @@ const resourceMessenger = {
             passEmptyMsg: 'You have not enter your password.',
             passNotDuplicatedMsg: 'Password does not match.',
             fileNotFound: 'Error: No files found.',
+            generalEmpty: 'is empty.',
+            notFound: '(id): not found',
         },
         success: {
             register: 'Registered successfully.',
@@ -18,6 +20,7 @@ const resourceMessenger = {
             updateInfo: 'Update info successfully.',
             updatePrivacy: 'Update privacy information of user successfully.',
             uploadFile: 'File uploaded.',
+            messageCreate: 'Message successfully.'
         },
     },
 
@@ -27,6 +30,7 @@ const resourceMessenger = {
 
     number: {
         defaultMsg: 20,
+        defaultConversation: 15,
     }
 };
 

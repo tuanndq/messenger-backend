@@ -9,10 +9,13 @@ const authCtrl = {
       if (!user) {
         return res
           .status(400)
-          .json({ msg: resourceMessenger.msg.err.notExistUser });
+          .json({
+            devMsg: resourceMessenger.msg.err.notExistUser,
+            userMsg: resourceMessenger.msg.err.notExistUser,
+          });
       }
 
-      res.status(200).json(user);
+      res.status(200).json({ user });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -20,7 +23,7 @@ const authCtrl = {
       });
     }
   },
-  
+
   updateInfoUser: async (req, res) => {
     try {
       const {
@@ -53,7 +56,7 @@ const authCtrl = {
         linked: linked,
       });
 
-      res.json({ msg: resourceMessenger.msg.success.updateInfo });
+      res.status(200).json({ msg: resourceMessenger.msg.success.updateInfo });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -79,7 +82,7 @@ const authCtrl = {
         phoneNumber: phoneNumber,
       });
 
-      res.json({ msg: resourceMessenger.msg.success.updatePrivacy });
+      res.status(200).json({ msg: resourceMessenger.msg.success.updatePrivacy });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,

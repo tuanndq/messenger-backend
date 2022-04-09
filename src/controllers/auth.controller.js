@@ -62,7 +62,7 @@ const authCtrl = {
 
       await newUser.save();
 
-      res.json({
+      res.status(201).json({
         msg: resourceMessenger.msg.success.register,
         access_token,
         user: {
@@ -70,6 +70,7 @@ const authCtrl = {
           password: "",
         },
       });
+
     } catch (err) {
       return res.status(500).json({ 
         devMsg: err.message,
@@ -83,6 +84,14 @@ const authCtrl = {
       const { email, password } = req.body;
 
       console.log(email, password);
+
+      // Validate email
+      if (!validateEmail(email)) {
+        return res.status(400).json({
+          devMsg: resourceMessenger.msg.err.emailErrMsg,
+          userMsg: resourceMessenger.msg.err.emailErrMsg,
+        });
+      }
 
       const user = await User.findOne({ email });
 
@@ -113,14 +122,15 @@ const authCtrl = {
       //   maxAge: 30 * 24 * 60 * 60 * 1000, // 30days
       // });
 
-      res.json({
-        msg:resourceMessenger.msg.success.login,
+      res.status(200).json({
+        msg: resourceMessenger.msg.success.login,
         access_token,
         user: {
           ...user._doc,
           password: "",
         },
       });
+      
     } catch (err) {
       return res.status(500).json({ 
         devMsg: err.message,
@@ -132,7 +142,7 @@ const authCtrl = {
   logout: async (req, res) => {
     try {
       // res.clearCookie("refreshtoken", { path: "/api/refresh_token" });
-      return res.json({ msg: resourceMessenger.msg.success.logout });
+      return res.status(200).json({ msg: resourceMessenger.msg.success.logout });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,

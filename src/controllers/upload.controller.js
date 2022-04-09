@@ -26,7 +26,7 @@ const uploadCtrl = {
           }/o/${encodeURIComponent(blob.name)}?alt=media`;
 
         res.status(200).json({
-          message: resourceMessenger.msg.success.uploadFile,
+          msg: resourceMessenger.msg.success.uploadFile,
           url: publicUrl,
         });
       });
@@ -62,8 +62,9 @@ const uploadCtrl = {
       blobWriter.on("finish", () => {
         let publicUrl = `https://firebasestorage.googleapis.com/v0/b/${firebase.bucket.name
           }/o/${encodeURIComponent(blob.name)}?alt=media`;
+        
         res.status(200).json({
-          message: resourceMessenger.msg.success.uploadFile,
+          msg: resourceMessenger.msg.success.uploadFile,
           url: publicUrl,
         });
       });
