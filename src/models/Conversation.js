@@ -17,6 +17,7 @@ const ConversationSchema = new mongoose.Schema({
   },
 
   members: {
+    // Array of Member-ID
     type: Array,
   },
 });
