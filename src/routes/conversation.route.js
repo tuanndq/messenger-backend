@@ -5,6 +5,8 @@ router.get("/:userId", conversationCtrl.getDefault);
 
 router.get("/id/:id", conversationCtrl.getById);
 
+router.get("/members/:conversationId", conversationCtrl.getMembers);
+
 router.post("/", conversationCtrl.create);
 
 router.put("/:id", conversationCtrl.update);
