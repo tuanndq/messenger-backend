@@ -1,5 +1,7 @@
-const Conversation = require("../models/Conversation");
+const { ObjectId } = require("mongodb");
 const resourceMessenger = require("../utils/resource");
+const Conversation = require("../models/Conversation");
+const User = require("../models/User");
 
 const conversationCtrl = {
   getById: async (req, res) => {
@@ -32,6 +34,28 @@ const conversationCtrl = {
         members: { $in: [_id.toString()] },
       });
       res.status(200).json({ conversations });
+    } catch (err) {
+      console.log(err);
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
+
+  getMembers: async (req, res) => {
+    let { conversationId } = req.params;
+    try {
+      let conversation = await Conversation.findById(conversationId);
+      let membersId = conversation.members.map((id) => {
+        return ObjectId(id);
+      });
+
+      let members = await User.find({
+        _id: { $in: membersId },
+      });
+
+      res.status(200).json(members);
     } catch (err) {
       console.log(err);
       return res.status(500).json({
