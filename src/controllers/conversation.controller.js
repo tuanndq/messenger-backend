@@ -42,16 +42,18 @@ const conversationCtrl = {
   },
 
   create: async (req, res) => {
-    const { _id } = req.user;
-    const { title } = req.body;
+    // const { _id } = req.user;
+    const { title, members } = req.body;
     try {
       let conversation = await Conversation.create({
-        title: title,
-        members: [_id.toString()],
+        title,
+        members,
       });
-      res.status(200).json({
+
+      res.status(201).json({
         conversation,
       });
+
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
