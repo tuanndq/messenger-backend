@@ -1,4 +1,5 @@
 const Message = require('../models/Message');
+const Conversation = require('../models/Conversation');
 const resourceMessenger = require('../utils/resource');
 
 const messageCtrl = {
@@ -7,7 +8,7 @@ const messageCtrl = {
             const conversationId = req.params.id;
             let messages = await Message
                 .find({ conversationId })
-                .sort({ createdAt: 1 })
+                .sort({ createdAt: 0 })
                 .limit(resourceMessenger.number.defaultMsg);
 
             res.status(200).json({
@@ -29,13 +30,23 @@ const messageCtrl = {
 
             // Validate data
             Object.keys(messageObj).forEach(field => {
-                if (!messageObj[field]) {
+                if (!messageObj[field] && messageObj[field] !== 0) {
                     return res.status(400).json({
                         devMsg: `${field} ${resourceMessenger.msg.err.generalEmpty}`,
                         userMsg: resourceMessenger.msg.err.generalUserMsg,
                     });
                 }
             });
+
+            // Check if senderId is in the conversation?
+            const conversation = await Conversation.findById(conversationId);
+            console.log(conversation.members);
+            if (!conversation.members.includes(senderId)) {
+                return res.status(400).json({
+                    devMsg: `Message: ${resourceMessenger.msg.err.missingInfo}`,
+                    userMsg: resourceMessenger.msg.err.generalUserMsg,
+                });
+            }
 
             // Everything is OKAY
             const newMessage = new Message({

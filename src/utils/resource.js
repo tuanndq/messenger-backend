@@ -12,6 +12,7 @@ const resourceMessenger = {
             fileNotFound: 'Error: No files found.',
             generalEmpty: 'is empty.',
             notFound: '(id): not found',
+            missingInfo: 'Missing infomation.'
         },
         success: {
             register: 'Registered successfully.',
@@ -31,6 +32,7 @@ const resourceMessenger = {
     number: {
         defaultMsg: 20,
         defaultConversation: 15,
+        defaultUser: 20,
     }
 };
 
