@@ -2,10 +2,30 @@ const User = require("../models/User");
 const resourceMessenger = require("../utils/resource");
 
 const authCtrl = {
+  getAll: async (req, res) => {
+    try {
+      let users = await User.find().limit(resourceMessenger.number.defaultUser);
+
+      if (!users) {
+        return res.status(204);
+      }
+
+      res.status(200).json({
+        users,
+      });
+      
+    } catch (err) {
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
+
   getUserById: async (req, res) => {
     try {
       let user = await User.findById(req.user._id).select("-password");
-
+      
       if (!user) {
         return res
           .status(400)

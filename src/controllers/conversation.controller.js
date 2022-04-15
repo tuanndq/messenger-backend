@@ -5,8 +5,9 @@ const User = require("../models/User");
 
 const conversationCtrl = {
   getById: async (req, res) => {
+    const _id = req.params.id;
+
     try {
-      const _id = req.params.id;
       let conversation = await Conversation.findById(_id);
 
       if (!conversation) {
@@ -27,13 +28,19 @@ const conversationCtrl = {
     }
   },
 
+  // Get by user Id
   getDefault: async (req, res) => {
-    let { _id } = req.user;
+    const _id = req.params.userId;
     try {
-      let conversations = await Conversation.find({
-        members: { $in: [_id.toString()] },
-      });
+      let conversations = await Conversation
+        .find({
+          members: { $in: [_id.toString()] },
+        })
+        .sort({ updatedAt: 0 })
+        .limit(resourceMessenger.number.defaultConversation);
+      
       res.status(200).json({ conversations });
+
     } catch (err) {
       console.log(err);
       return res.status(500).json({
@@ -45,6 +52,7 @@ const conversationCtrl = {
 
   getMembers: async (req, res) => {
     let { conversationId } = req.params;
+    
     try {
       let conversation = await Conversation.findById(conversationId);
       let membersId = conversation.members.map((id) => {
@@ -66,16 +74,28 @@ const conversationCtrl = {
   },
 
   create: async (req, res) => {
-    const { _id } = req.user;
-    const { title } = req.body;
-    try {
-      let conversation = await Conversation.create({
-        title: title,
-        members: [_id.toString()],
+    const { title, members } = req.body;
+
+    // validate data
+    if (!title || !members) {
+      return res.status(400).json({
+        devMsg: `Conversation: ${resourceMessenger.msg.err.missingInfo}`,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
       });
-      res.status(200).json({
+    }
+
+    try {
+      const conversation = new Conversation({
+        title,
+        members,
+      });
+
+      await conversation.save();
+
+      res.status(201).json({
         conversation,
       });
+
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
