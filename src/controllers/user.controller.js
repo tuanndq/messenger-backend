@@ -6,13 +6,35 @@ const resourceMessenger = require("../utils/resource");
 const userCtrl = {
   getUserById: async (req, res) => {
     try {
-      const user = await User.findById(req.user._id).select("-password");
+      let users = await User.find().limit(resourceMessenger.number.defaultUser);
 
-      if (!user) {
-        res.status(400).json({ msg: resourceMessenger.msg.err.notExistUser });
+      if (!users) {
+        return res.status(204);
       }
 
-      res.json(user);
+      res.status(200).json({
+        users,
+      });
+    } catch (err) {
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
+
+  getUserById: async (req, res) => {
+    try {
+      let user = await User.findById(req.user._id).select("-password");
+
+      if (!user) {
+        return res.status(400).json({
+          devMsg: resourceMessenger.msg.err.notExistUser,
+          userMsg: resourceMessenger.msg.err.notExistUser,
+        });
+      }
+
+      res.status(200).json({ user });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -137,7 +159,7 @@ const userCtrl = {
         bio: bio,
       });
 
-      res.json({ msg: resourceMessenger.msg.success.updateInfo });
+      res.status(200).json({ msg: resourceMessenger.msg.success.updateInfo });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -145,6 +167,7 @@ const userCtrl = {
       });
     }
   },
+
   updatePrivacyUser: async (req, res) => {
     try {
       const { email, password, phoneNumber } = req.body;
@@ -162,7 +185,9 @@ const userCtrl = {
         phoneNumber: phoneNumber,
       });
 
-      res.json({ msg: resourceMessenger.msg.success.updatePrivacy });
+      res
+        .status(200)
+        .json({ msg: resourceMessenger.msg.success.updatePrivacy });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,

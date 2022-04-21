@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { enumMessenger } = require("../utils/enum");
+const enumMessenger = require("../utils/enum");
 
 const MessageSchema = new mongoose.Schema(
   {
@@ -26,6 +26,16 @@ const MessageSchema = new mongoose.Schema(
     content: {
       type: String,
       required: true,
+    },
+
+    content: {
+      type: String,
+      required: true,
+    },
+
+    isDeleted: {
+      type: Boolean,
+      default: false,
     },
   },
   {

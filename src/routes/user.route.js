@@ -1,6 +1,8 @@
 const router = require("express").Router();
 const userCtrl = require("../controllers/user.controller");
 
+router.get('/admin', userCtrl.getAll);
+
 router.get("/", userCtrl.getUserById);
 
 router.get("/suggestions", userCtrl.getSuggesstionUser);
