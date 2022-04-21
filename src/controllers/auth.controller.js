@@ -32,15 +32,17 @@ const authCtrl = {
         });
       }
 
-
       // Everything is OKAY
       const passwordHash = await bcrypt.hash(password, 12);
+
+      const fullName = firstName.concat(" ", lastName);
 
       const newUser = new User({
         email,
         password: passwordHash,
         lastName,
         firstName,
+        fullName,
         gender,
         dateOfBirth,
       });
@@ -71,7 +73,7 @@ const authCtrl = {
         },
       });
     } catch (err) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         devMsg: err.message,
         userMsg: resourceMessenger.msg.err.generalUserMsg,
       });
@@ -114,7 +116,7 @@ const authCtrl = {
       // });
 
       res.json({
-        msg:resourceMessenger.msg.success.login,
+        msg: resourceMessenger.msg.success.login,
         access_token,
         user: {
           ...user._doc,
@@ -122,7 +124,7 @@ const authCtrl = {
         },
       });
     } catch (err) {
-      return res.status(500).json({ 
+      return res.status(500).json({
         devMsg: err.message,
         userMsg: resourceMessenger.msg.err.generalUserMsg,
       });
@@ -156,7 +158,7 @@ const createAccessToken = (payload) => {
 
 const validateEmail = (email) => {
   const regex = resourceMessenger.regex.email;
-	return regex.test(String(email).toLowerCase());
-}
+  return regex.test(String(email).toLowerCase());
+};
 
 module.exports = authCtrl;

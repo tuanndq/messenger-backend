@@ -1,6 +1,6 @@
 const mongoose = require("mongoose");
 
-const enumMessenger = require('../utils/enum');
+const enumMessenger = require("../utils/enum");
 
 const UserSchema = new mongoose.Schema(
   {
@@ -9,48 +9,37 @@ const UserSchema = new mongoose.Schema(
       required: true,
       unique: true,
       lowercase: true,
+      trim: true,
     },
-
     password: {
       type: String,
       required: true,
       minlength: 8,
     },
-    
     firstName: {
       type: String,
       required: true,
     },
-    
     lastName: {
       type: String,
       required: true,
     },
-    
     fullName: {
       type: String,
     },
-    
     gender: {
       type: Number,
       required: true,
       default: enumMessenger.gender.male,
     },
-    
     dateOfBirth: {
       type: String,
       required: true,
     },
-    
-    address: {
-      type: String,
-    },
-    
     phoneNumber: {
       type: String,
       unique: true,
     },
-    
     avatar: {
       type: String,
       default: function () {
@@ -63,50 +52,16 @@ const UserSchema = new mongoose.Schema(
           "https://styles.redditmedia.com/t5_48o9pq/styles/profileIcon_snoof659860e-780f-45c8-b970-b897fe47cbbb-headshot-f.png?width=256&height=256&crop=256:256,smart&s=43a891e32973fd222b9c3ce11db1bb9959c91e25",
           "https://styles.redditmedia.com/t5_413wd2/styles/profileIcon_snoo5431bcd7-3eaf-40db-95b6-4561247e4aa7-headshot-f.png?width=256&height=256&crop=256:256,smart&s=8571c7a059e042d2bdd222b109c8bb15ebd95802",
         ];
-
         return arr[Math.floor(Math.random() * arr.length)];
       },
     },
-    
     wallpaper: {
       type: String,
       default:
         "https://i.pinimg.com/736x/f4/f9/1c/f4f91c394261080ff096d7c7843eb4c7.jpg",
     },
-    
-    bio: {
-      type: String,
-    },
-    
-    schools: [{ schoolName: String, major: String, graduated: Boolean }],
-    
-    workPlaces: [
-      {
-        workPlaceName: String,
-        position: String,
-        currentlyWorking: Boolean,
-      },
-    ],
-    
-    lives: {
-      type: String,
-    },
-    
-    linked: {
-      facebook: {
-        type: String,
-      },
-      instagram: {
-        type: String,
-      },
-      github: {
-        type: String,
-      },
-      linkedIn: {
-        type: String,
-      },
-    },
-
+    stories: [{ type: mongoose.Types.ObjectId, ref: "Story" }],
+    friends: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     // offline -> 0
     // online -> 1
     // notWorking -> 2
@@ -120,5 +75,8 @@ const UserSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+UserSchema.index({ fullName: "text" });
+UserSchema.index({ fullName: 1 });
 
 module.exports = mongoose.model("User", UserSchema);
