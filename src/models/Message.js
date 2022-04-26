@@ -28,11 +28,6 @@ const MessageSchema = new mongoose.Schema(
       required: true,
     },
 
-    content: {
-      type: String,
-      required: true,
-    },
-
     isDeleted: {
       type: Boolean,
       default: false,
@@ -42,5 +37,7 @@ const MessageSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
+
+MessageSchema.index({ content: 'text' });
 
 module.exports = mongoose.model("Message", MessageSchema);

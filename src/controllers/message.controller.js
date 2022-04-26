@@ -3,17 +3,72 @@ const Conversation = require('../models/Conversation');
 const resourceMessenger = require('../utils/resource');
 
 const messageCtrl = {
-    getDefault: async (req, res) => {
-        try {
-            const conversationId = req.params.id;
-            let messages = await Message
-                .find({ conversationId })
-                .sort({ createdAt: 0 })
-                .limit(resourceMessenger.number.defaultMsg);
+    getAllInConversation: async (req, res) => {
+        const _conversationId = req.params.conversationId;
 
-            res.status(200).json({
-                messages,
+        try {
+            let messages = await Message
+                .find({ _conversationId })
+                .sort({ createdAt: -1 });
+
+            if (!messages) {
+                return res.status(204).json({ messages });
+            }
+
+            res.status(200).json({ messages });
+
+        } catch (err) {
+            return res.status(500).json({
+                devMsg: err.message,
+                userMsg: resourceMessenger.msg.err.generalUserMsg,
             });
+        }
+    },
+
+    getDefault: async (req, res) => {
+        const _conversationId = req.params.conversationId;
+        const { offset } = req.body;
+
+        try {
+            let messages = await Message
+                .find({ _conversationId })
+                .sort({ createdAt: -1 })
+                .limit(offset + resourceMessenger.number.defaultMsg);
+
+            if (!messages) {
+                return res.status(204).json({ 
+                    messages, 
+                    offset, 
+                });
+            }
+
+            res.status(200).json({ 
+                messages,
+                offset: offset + resourceMessenger.number.defaultMsg,
+            });
+
+        } catch (err) {
+            return res.status(500).json({
+                devMsg: err.message,
+                userMsg: resourceMessenger.msg.err.generalUserMsg,
+            });
+        }
+    },
+
+    getById: async (req, res) => {
+        const _msgId = req.params.msgId;
+
+        try {
+            let message = await Message.findById(_msgId);
+
+            if (!message) {
+                return res.status(404).json({
+                    devMsg: `Message: ${resourceMessenger.msg.err.notFound}`,
+                    userMsg: resourceMessenger.msg.err.generalUserMsg,
+                });
+            }
+
+            res.status(200).json({ message });
 
         } catch (err) {
             return res.status(500).json({
@@ -87,7 +142,8 @@ const messageCtrl = {
             }
 
             res.status(200).json({
-                msg: message
+                msg: message,
+                alternative: resourceMessenger.msg.success.removeMessage,
             });
 
         } catch (err) {
