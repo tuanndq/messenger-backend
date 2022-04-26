@@ -195,6 +195,27 @@ const userCtrl = {
       });
     }
   },
+
+  // Get all for Admin
+  getAll: async (req, res) => {
+    try {
+      let users = await User.find();
+
+      if (!users) {
+        return res.status(204);
+      }
+
+      res.status(200).json({
+        users,
+      });
+      
+    } catch (err) {
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
 };
 
 module.exports = userCtrl;
