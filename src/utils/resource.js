@@ -22,7 +22,7 @@ const resourceMessenger = {
             updatePrivacy: 'Update privacy information of user successfully.',
             uploadFile: 'File uploaded.',
             messageCreate: 'Message successfully.',
-            removeMessage: 'The message has been removed.',
+            removeMessage: 'The message has been removed',
         },
     },
 

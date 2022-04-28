@@ -11,7 +11,7 @@ const messageCtrl = {
                 .find({ _conversationId })
                 .sort({ createdAt: -1 });
 
-            if (!messages) {
+            if (!messages.length) {
                 return res.status(204).json({ messages });
             }
 
@@ -26,25 +26,25 @@ const messageCtrl = {
     },
 
     getDefault: async (req, res) => {
-        const _conversationId = req.params.conversationId;
-        const { offset } = req.body;
+        const { conversationId, offset } = req.query;
+        let _offset = parseInt(offset);
 
         try {
             let messages = await Message
-                .find({ _conversationId })
+                .find({ conversationId })
                 .sort({ createdAt: -1 })
-                .limit(offset + resourceMessenger.number.defaultMsg);
+                .limit(_offset + resourceMessenger.number.defaultMsg);
 
-            if (!messages) {
-                return res.status(204).json({ 
-                    messages, 
-                    offset, 
+            if (!messages.length) {
+                return res.status(204).json({
+                    messages,
+                    offset: _offset,
                 });
             }
 
-            res.status(200).json({ 
+            res.status(200).json({
                 messages,
-                offset: offset + resourceMessenger.number.defaultMsg,
+                offset: _offset + resourceMessenger.number.defaultMsg,
             });
 
         } catch (err) {
@@ -69,6 +69,36 @@ const messageCtrl = {
             }
 
             res.status(200).json({ message });
+
+        } catch (err) {
+            return res.status(500).json({
+                devMsg: err.message,
+                userMsg: resourceMessenger.msg.err.generalUserMsg,
+            });
+        }
+    },
+
+    searchMsg: async (req, res) => {
+        const { searchText, conversationId } = req.query;
+
+        try {
+            const searchTextRegex = new RegExp(searchText, 'i');
+
+            const messages = await Message.find({
+                conversationId,
+                content: {
+                    $regex: searchTextRegex,
+                },
+            });
+
+            if (!messages.length) {
+                return res.status(204).json({ messages });
+            }
+
+            res.status(200).json({
+                messages,
+                searchText,
+            });
 
         } catch (err) {
             return res.status(500).json({
@@ -129,8 +159,8 @@ const messageCtrl = {
 
     removeMsg: async (req, res) => {
         try {
-            const _id = req.params.id;
-            const message = await Message.findOneAndUpdate(_id, {
+            const _messageId = req.params.messageId;
+            const message = await Message.findByIdAndUpdate(_messageId, {
                 isDeleted: true
             });
 
@@ -142,7 +172,7 @@ const messageCtrl = {
             }
 
             res.status(200).json({
-                msg: message,
+                message,
                 alternative: resourceMessenger.msg.success.removeMessage,
             });
 

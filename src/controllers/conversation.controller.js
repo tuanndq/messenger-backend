@@ -4,6 +4,24 @@ const Conversation = require("../models/Conversation");
 const User = require("../models/User");
 
 const conversationCtrl = {
+  getAll: async (req, res) => {
+    try {
+      let conversations = await Conversation.find();
+
+      if (!conversations.length) {
+        return res.status(204).json({ conversations });
+      }
+
+      res.status(200).json({ conversations });
+
+    } catch (err) {
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
+
   getById: async (req, res) => {
     const _id = req.params.id;
 
@@ -30,15 +48,19 @@ const conversationCtrl = {
 
   // Get by user Id
   getDefault: async (req, res) => {
-    const _id = req.params.userId;
+    const _userId = req.params.userId;
     try {
       let conversations = await Conversation
         .find({
-          members: { $in: [_id.toString()] },
+          members: { $in: [_userId.toString()] },
         })
-        .sort({ updatedAt: 0 })
+        .sort({ updatedAt: -1 })
         .limit(resourceMessenger.number.defaultConversation);
-      
+
+      if (!conversations.length) {
+        return res.status(204).json({ conversations });
+      }
+
       res.status(200).json({ conversations });
 
     } catch (err) {
@@ -52,7 +74,7 @@ const conversationCtrl = {
 
   getMembers: async (req, res) => {
     let { conversationId } = req.params;
-    
+
     try {
       let conversation = await Conversation.findById(conversationId);
       let membersId = conversation.members.map((id) => {
@@ -63,9 +85,13 @@ const conversationCtrl = {
         _id: { $in: membersId },
       });
 
-      res.status(200).json(members);
+      if (!members.length) {
+        return res.status(204).json({ members });
+      }
+
+      res.status(200).json({ members });
+
     } catch (err) {
-      console.log(err);
       return res.status(500).json({
         devMsg: err.message,
         userMsg: resourceMessenger.msg.err.generalUserMsg,
@@ -112,7 +138,9 @@ const conversationCtrl = {
         title,
         members,
       });
+
       res.status(200).json({ message: "Update conversation successfully!" });
+      
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
