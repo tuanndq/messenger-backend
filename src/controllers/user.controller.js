@@ -6,26 +6,7 @@ const resourceMessenger = require("../utils/resource");
 const userCtrl = {
   getUserById: async (req, res) => {
     try {
-      let users = await User.find().limit(resourceMessenger.number.defaultUser);
-
-      if (!users) {
-        return res.status(204);
-      }
-
-      res.status(200).json({
-        users,
-      });
-    } catch (err) {
-      return res.status(500).json({
-        devMsg: err.message,
-        userMsg: resourceMessenger.msg.err.generalUserMsg,
-      });
-    }
-  },
-
-  getUserById: async (req, res) => {
-    try {
-      let user = await User.findById(req.user._id).select("-password");
+      const user = await User.findById(req.params.id).select("-password");
 
       if (!user) {
         return res.status(400).json({
@@ -34,7 +15,7 @@ const userCtrl = {
         });
       }
 
-      res.status(200).json({ user });
+      res.status(200).json(user);
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -43,19 +24,18 @@ const userCtrl = {
     }
   },
 
-  getSuggesstionUser: async (req, res) => {
+  getUsers: async (req, res) => {
     try {
       const users = await User.aggregate([
-        { $sample: { size: 5 } },
         {
           $lookup: {
             from: "stories",
             localField: "stories",
             foreignField: "_id",
-            as: "result",
+            as: "stories",
           },
         },
-      ]).project("-password");
+      ]);
 
       return res.status(200).json(users);
     } catch (err) {
@@ -69,16 +49,22 @@ const userCtrl = {
   searchUsers: async (req, res) => {
     try {
       if (req.query.searchUser) {
-        const searchUsers = await User.find({
-          $or: [
-            {
-              fullName: { $regex: new RegExp(req.query.searchUser, "i") },
-            },
-            {
-              $text: { $search: req.query.searchUser },
-            },
-          ],
-        }).limit(20);
+        // const searchUsers = await User.find({
+        //   $or: [
+        //     {
+        //       fullName: { $regex: new RegExp(req.query.searchUser, "i") },
+        //     },
+        //     {
+        //       $text: { $search: req.query.searchUser },
+        //     },
+        //   ],
+        // }).limit(20);
+
+        // const searchUsers = await User.aggregate([
+        //   {
+        //     $regexMatch: {input: req.query.searchUser}
+        //   }
+        // ])
 
         res.json(searchUsers);
       }
@@ -146,20 +132,26 @@ const userCtrl = {
         dateOfBirth,
         avatar,
         wallpaper,
+        address,
+        school,
+        work,
         bio,
       } = req.body;
 
       console.log(req.body);
 
-      await User.findByIdAndUpdate(req.user._id, {
+      const newUser = await User.findByIdAndUpdate(req.user._id, {
         lastName: lastName,
         firstName: firstName,
         gender: gender,
         dateOfBirth: dateOfBirth,
+        address,
+        school,
+        work,
         bio: bio,
       });
 
-      res.status(200).json({ msg: resourceMessenger.msg.success.updateInfo });
+      res.status(200).json({ newUser });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
