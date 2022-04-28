@@ -27,10 +27,19 @@ const UserSchema = new mongoose.Schema(
     fullName: {
       type: String,
     },
+    address: {
+      type: String,
+    },
+    school: {
+      type: String,
+    },
+    work: {
+      type: String,
+    },
     gender: {
-      type: Number,
+      type: String,
       required: true,
-      default: enumMessenger.gender.male,
+      default: "Male",
     },
     dateOfBirth: {
       type: String,
@@ -39,6 +48,9 @@ const UserSchema = new mongoose.Schema(
     phoneNumber: {
       type: String,
       unique: true,
+    },
+    bio: {
+      type: String,
     },
     avatar: {
       type: String,
