@@ -30,18 +30,29 @@ app.use(cookieParser());
 
 // SOCKET
 const http = require("http").createServer(app);
-const io = require("socket.io")(http);
+const { Server } = require("socket.io");
+
+const io = new Server(http, {
+  cors: {
+    origin: "*",
+  },
+});
 
 io.on("connection", (socket) => {
+  console.log(`User connected ${socket.id}`);
   SocketServer(socket);
+
+  socket.on("disconnect", () => {
+    console.log(`User disconnected ${socket.id}`);
+  });
 });
 
 // ROUTES
 app.use("/api/auth", require("./src/routes/auth.route"));
 app.use("/api/user", auth, require("./src/routes/user.route"));
 app.use("/api/upload", auth, require("./src/routes/upload.route"));
-app.use('/api/message', auth, require('./src/routes/message.route'));
-app.use('/api/conversation', auth, require('./src/routes/conversation.route'));
+app.use("/api/message", auth, require("./src/routes/message.route"));
+app.use("/api/conversation", auth, require("./src/routes/conversation.route"));
 
 const port = process.env.PORT || 5000;
 http.listen(port, () => {
