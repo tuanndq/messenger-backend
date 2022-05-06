@@ -10,7 +10,9 @@ router.get("/conversation/:conversationId", messageCtrl.getDefault);
 
 router.get("/:msgId", messageCtrl.getById);
 
-router.post("/", messageCtrl.createMsg);
+router.get('/filter/conversation', messageCtrl.searchMsg);
+
+router.post('/', messageCtrl.createMsg);
 
 router.patch("/:messageId", messageCtrl.removeMsg);
 

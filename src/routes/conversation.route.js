@@ -1,7 +1,9 @@
 const router = require("express").Router();
 const conversationCtrl = require("../controllers/conversation.controller");
 
-router.get("/:userId", conversationCtrl.getDefault);
+router.get('/', conversationCtrl.getAll);
+
+router.get("/user/:userId", conversationCtrl.getDefault);
 
 router.get("/id/:id", conversationCtrl.getById);
 
