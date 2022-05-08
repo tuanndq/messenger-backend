@@ -1,7 +1,8 @@
 const router = require("express").Router();
 const userCtrl = require("../controllers/user.controller");
 
-// router.get('/admin', userCtrl.getAll);
+router.get('/admin', userCtrl.getAll);
+
 router.get("/search", userCtrl.searchUsers);
 
 router.get("/", userCtrl.getUsers);

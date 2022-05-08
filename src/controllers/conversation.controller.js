@@ -46,7 +46,7 @@ const conversationCtrl = {
     }
   },
 
-  // Get by user Id
+  // Get by user Id (it is auth id actually)
   getDefault: async (req, res) => {
     const _userId = req.params.userId;
     try {
@@ -65,6 +65,31 @@ const conversationCtrl = {
 
     } catch (err) {
       console.log(err);
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
+
+  // Get by 
+  get1vs1: async (req, res) => {
+    const { peerA, peerB } = req.query;
+
+    try {
+      let members = [peerA, peerB];
+      const conversation = await Conversation.findOne({
+        title: '1vs1',
+        members,
+      });
+
+      if (!conversation) {
+        return res.status(204).json(conversation);
+      }
+
+      res.status(200).json(conversation);
+      
+    } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
         userMsg: resourceMessenger.msg.err.generalUserMsg,
@@ -140,7 +165,7 @@ const conversationCtrl = {
       });
 
       res.status(200).json({ message: "Update conversation successfully!" });
-      
+
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
