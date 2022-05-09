@@ -74,6 +74,8 @@ const UserSchema = new mongoose.Schema(
     },
     stories: [{ type: mongoose.Types.ObjectId, ref: "Story" }],
     friends: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+    requestFriendSent: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+    requestFriendReceived: [{ type: mongoose.Types.ObjectId, ref: "User" }],
     // offline -> 0
     // online -> 1
     // notWorking -> 2
