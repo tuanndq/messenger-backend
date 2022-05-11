@@ -200,11 +200,136 @@ const userCtrl = {
       res.status(200).json({
         users,
       });
-      
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
         userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
+
+  sendFriendRequest: async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+
+    try {
+      const currentUser = await User.findById(user.id);
+
+      const checkTargetMember = await User.findById(id);
+      if (!checkTargetMember) {
+        return res.status(400).json({ message: "Target user not exists." });
+      }
+
+      const checkExistsSentRequest = checkTargetMember.requestFriendSent.some(
+        (e) => e === id
+      );
+      if (checkExistsSentRequest) {
+        return res
+          .status(400)
+          .json({ message: "Request to this friend already been sent." });
+      }
+
+      const checkExistsReceivedRequest =
+        checkTargetMember.requestFriendReceived.some((e) => e === id);
+      if (checkExistsReceivedRequest) {
+        return res
+          .status(400)
+          .json({ message: "This user had sent you a friend request." });
+      }
+
+      currentUser.requestFriendSent.push(id);
+      await currentUser.save();
+
+      checkTargetMember.requestFriendReceived.push(user.id);
+      await checkTargetMember.save();
+
+      res.status(200).json({ message: "Sent friend request" });
+    } catch (err) {
+      console.log(`Send friend request error: ${err}`);
+      res.status(400).json({ message: "Send friend request error." });
+    }
+  },
+
+  getListFriendRequestSent: async (req, res) => {
+    const user = req.user;
+
+    try {
+      const listFriendRequest = await User.findById(user.id).populate(
+        "requestFriendSent"
+      );
+
+      return res.status(200).json(listFriendRequest.requestFriendSent);
+    } catch (err) {
+      console.log(`Get list friend request error: ${err}`);
+      res.status(400).json({
+        message: "Get list friend request error.",
+      });
+    }
+  },
+
+  getListFriendRequestReceived: async (req, res) => {
+    const user = req.user;
+
+    try {
+      const listFriendRequest = await User.findById(user.id).populate(
+        "requestFriendReceived"
+      );
+
+      return res.status(200).json(listFriendRequest.requestFriendReceived);
+    } catch (err) {
+      console.log(`Get list friend request error: ${err}`);
+      res.status(400).json({
+        message: "Get list friend request error.",
+      });
+    }
+  },
+
+  acceptFriendRequest: async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+
+    try {
+      const currentUser = await User.findById(user.id);
+
+      const checkExistsRequest = currentUser.some((e) => e === id);
+      if (!checkExistsRequest) {
+        return res.status(400).json({ message: "Not allowed." });
+      }
+
+      currentUser.requestFriendReceived =
+        currentUser.requestFriendReceived.filter((e) => e !== id);
+
+      currentUser.friends.push(id);
+
+      await currentUser.save();
+    } catch (err) {
+      console.log(`Accept friend request error: ${err}`);
+      res.status(400).json({ message: "Accept friend request error." });
+    }
+  },
+
+  rejectFriendRequest: async (req, res) => {
+    const user = req.user;
+    const { id } = req.params;
+
+    try {
+      const currentUser = await User.findById(user.id);
+
+      const checkExistsRequest = currentUser.some((e) => e === id);
+      if (!checkExistsRequest) {
+        return res.status(400).json({ message: "Not allowed." });
+      }
+
+      currentUser.requestFriendReceived =
+        currentUser.requestFriendReceived.filter((e) => e !== id);
+
+      await currentUser.save();
+
+      res.status(200).json({ message: "Rejected this request." });
+    } catch (err) {
+      console.log(`Reject friend request error: ${err}`);
+      res.status(400).json({
+        message: "Reject friend request error.",
       });
     }
   },
