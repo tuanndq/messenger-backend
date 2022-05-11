@@ -4,11 +4,11 @@ const resourceMessenger = require('../utils/resource');
 
 const messageCtrl = {
     getAllInConversation: async (req, res) => {
-        const _conversationId = req.params.conversationId;
+        const conversationId = req.params.conversationId;
 
         try {
             let messages = await Message
-                .find({ _conversationId })
+                .find({ conversationId })
                 .sort({ createdAt: -1 });
 
             if (!messages.length) {
