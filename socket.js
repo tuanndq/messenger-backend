@@ -57,6 +57,8 @@ const SocketServer = (socket) => {
     const { room, userName, idUser, type, message } = data;
     // await clientRedis.lpush(roomName, JSON.stringify(data));
 
+    console.log(data);
+
     const newMessage = new Message({
       conversationId: room,
       senderId: idUser,

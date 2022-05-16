@@ -36,7 +36,7 @@ const conversationCtrl = {
       }
 
       res.status(200).json(conversation);
-      
+
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -55,7 +55,7 @@ const conversationCtrl = {
       let conversations = await Conversation
         .find({ members: { $in: [_userId] }, })
         .sort({ updatedAt: -1 })
-        // .limit(resourceMessenger.number.defaultConversation);
+      // .limit(resourceMessenger.number.defaultConversation);
 
       if (!conversations.length) {
         return res.status(204).json({ conversations });
@@ -127,12 +127,33 @@ const conversationCtrl = {
   create: async (req, res) => {
     const { title, members } = req.body;
 
-    // validate data
+    // Validate data from request
+    // Check if not title or not members
     if (!title || !members) {
       return res.status(400).json({
         devMsg: `Conversation: ${resourceMessenger.msg.err.missingInfo}`,
         userMsg: resourceMessenger.msg.err.generalUserMsg,
       });
+    }
+
+    // Check if members contains less than 2 people
+    if (members.length < 2) {
+      return res.status(400).json({
+        devMsg: `Conversation: ${resourceMessenger.msg.err.missingInfo}`,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+
+    // Check if duplicated Conversation 1vs1
+    if (title === '1vs1') {
+      const conversations = await Conversation.find({ title, members });
+      console.log(conversations);
+      if (conversations.length > 0) {
+        return res.status(400).json({
+          devMsg: `Conversation: ${resourceMessenger.msg.err.duplicated1vs1}`,
+          userMsg: resourceMessenger.msg.err.generalUserMsg,
+        });
+      }
     }
 
     try {
@@ -143,9 +164,7 @@ const conversationCtrl = {
 
       await conversation.save();
 
-      res.status(201).json({
-        conversation,
-      });
+      res.status(201).json(conversation);
 
     } catch (err) {
       return res.status(500).json({

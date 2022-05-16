@@ -32,11 +32,7 @@ app.use(cookieParser());
 const http = require("http").createServer(app);
 const { Server } = require("socket.io");
 
-const io = new Server(http, {
-  cors: {
-    origin: "*",
-  },
-});
+const io = new Server(http);
 
 io.on("connection", (socket) => {
   console.log(`User connected ${socket.id}`);

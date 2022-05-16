@@ -12,7 +12,8 @@ const resourceMessenger = {
             fileNotFound: 'Error: No files found.',
             generalEmpty: 'is empty.',
             notFound: '(id): not found',
-            missingInfo: 'Missing infomation.'
+            missingInfo: 'Missing infomation.',
+            duplicated1vs1: 'Duplicated 1vs1.'
         },
         success: {
             register: 'Registered successfully.',
