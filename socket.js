@@ -45,6 +45,7 @@ const SocketServer = (socket) => {
       userName: e.users[0].firstName,
       idUser: e.senderId,
       avatar: e.users[0].avatar,
+      type: e.msgType,
       message: e.content,
       time: e.createAt,
     }));
@@ -53,13 +54,13 @@ const SocketServer = (socket) => {
   });
 
   socket.on("send_message", async (data) => {
-    const { room, userName, idUser, message } = data;
+    const { room, userName, idUser, type, message } = data;
     // await clientRedis.lpush(roomName, JSON.stringify(data));
 
     const newMessage = new Message({
       conversationId: room,
       senderId: idUser,
-      msgType: 0,
+      msgType: type,
       content: message,
       isDeleted: false,
     });

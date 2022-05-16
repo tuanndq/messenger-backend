@@ -17,7 +17,8 @@ const MessageSchema = new mongoose.Schema(
 
     // text -> 0
     // image -> 1
-    // file -> 2
+    // video -> 2
+    // file -> 3
     msgType: {
       type: Number,
       default: enumMessenger.msgType.text,
@@ -38,6 +39,6 @@ const MessageSchema = new mongoose.Schema(
   }
 );
 
-MessageSchema.index({ content: 'text' });
+MessageSchema.index({ content: "text" });
 
 module.exports = mongoose.model("Message", MessageSchema);
