@@ -145,6 +145,8 @@ const userCtrl = {
         firstName: firstName,
         gender: gender,
         dateOfBirth: dateOfBirth,
+        avatar,
+        wallpaper,
         address,
         school,
         work,

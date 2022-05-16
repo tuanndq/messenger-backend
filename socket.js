@@ -1,8 +1,76 @@
+const { createMsg } = require("./src/controllers/message.controller");
+const Conversation = require("./src/models/Conversation");
+const Message = require("./src/models/Message");
+const User = require("./src/models/User");
+const { default: mongoose } = require("mongoose");
+
 const SocketServer = (socket) => {
   // Send and receive message
-  socket.on("send_message", (data) => {
-    console.log(data);
-    socket.broadcast.emit("receive_message", data);
+  // const getRooms = await clientRedis.lrange('listRooms', 0, -1);
+  // socket.emit('show_rooms', getRooms);
+
+  socket.on("join_room", async (room) => {
+    // const foundRoom = getRooms.findIndex((data) => data === room);
+
+    // if (foundRoom === -1) {
+    //   socket.broadcast.emit('show_new_rooms', room);
+
+    //   await clientRedis.lpush('listRooms', room);
+    // }
+
+    socket.join(room);
+
+    // const getMessages = (await clientRedis.lrange(room, 0, -1)).map((e) => JSON.parse(e));
+
+    // const getMessages = await Message.find({ room }).sort({ createdAt: -1 });
+
+    const messages = await Message.aggregate([
+      {
+        $match: {
+          conversationId: mongoose.Types.ObjectId(room),
+        },
+      },
+      {
+        $lookup: {
+          from: "users",
+          localField: "senderId",
+          foreignField: "_id",
+          as: "users",
+        },
+      },
+    ]);
+
+    const mapGetMessages = messages.map((e) => ({
+      room: e.conversationId,
+      userName: e.users[0].firstName,
+      idUser: e.senderId,
+      avatar: e.users[0].avatar,
+      message: e.content,
+      time: e.createAt,
+    }));
+
+    socket.emit("receive_message", mapGetMessages);
+  });
+
+  socket.on("send_message", async (data) => {
+    const { room, userName, idUser, message } = data;
+    // await clientRedis.lpush(roomName, JSON.stringify(data));
+
+    const newMessage = new Message({
+      conversationId: room,
+      senderId: idUser,
+      msgType: 0,
+      content: message,
+      isDeleted: false,
+    });
+
+    await newMessage.save();
+
+    socket.to(room).emit("receive_message", data);
+  });
+
+  socket.on("typing", (data) => {
+    socket.broadcast.emit("typing", data);
   });
 };
 
