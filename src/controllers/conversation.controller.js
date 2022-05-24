@@ -57,6 +57,8 @@ const conversationCtrl = {
         .sort({ updatedAt: -1 })
       // .limit(resourceMessenger.number.defaultConversation);
 
+      console.log(conversations);
+
       if (!conversations.length) {
         return res.status(204).json({ conversations });
       }

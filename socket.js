@@ -69,6 +69,10 @@ const SocketServer = (socket) => {
 
     await newMessage.save();
 
+    await Conversation.findByIdAndUpdate(room, {
+      updatedAt: Date.now,
+    });
+
     socket.to(room).emit("receive_message", data);
   });
 
