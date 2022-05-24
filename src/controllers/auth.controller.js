@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
+const otpGenerator = require("otp-generator");
+const nodemailer = require("nodemailer");
 
 const resourceMessenger = require("../utils/resource");
 
@@ -84,8 +86,6 @@ const authCtrl = {
     try {
       const { email, password } = req.body;
 
-      console.log(email, password);
-
       // Validate email
       if (!validateEmail(email)) {
         return res.status(400).json({
@@ -151,6 +151,68 @@ const authCtrl = {
         userMsg: resourceMessenger.msg.err.generalUserMsg,
       });
     }
+  },
+
+  forgotPass: async (req, res) => {
+    const email = req.body.email;
+
+    const user = await User.findOne({ email });
+
+    if (!user) {
+      return res.status(400).json({
+        msg: resourceMessenger.msg.err.notExistAccount,
+      });
+    }
+
+    return res.json({ user });
+  },
+
+  otp: async (req, res) => {
+    const email = req.body.email;
+    const otp = otpGenerator.generate(6, {
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+
+    const transporter = nodemailer.createTransport({
+      service: "hotmail",
+      auth: {
+        user: "qthang1310@outlook.com",
+        pass: "L0r3mSt1ckyP4ss",
+      },
+    });
+
+    const options = {
+      from: "qthang1310@outlook.com",
+      to: email,
+      subject: "OTP Forgot Password",
+      text: "You recieved message from " + email,
+      html: `<p>Your OTP code is: ${otp}</p>`,
+    };
+
+    transporter.sendMail(options, (err, info) => {
+      if (err) {
+        console.log(err);
+        return;
+      } else {
+        console.log("Message sent: " + info.response);
+      }
+    });
+
+    return res.status(200).json({ otp: otp });
+  },
+
+  changePassword: async (req, res) => {
+    const { email, password } = req.body;
+
+    const passwordHash = await bcrypt.hash(password, 12);
+
+    const user = await User.findOneAndUpdate(
+      { email: email },
+      { password: passwordHash }
+    );
+
+    return res.json({ user });
   },
 };
 

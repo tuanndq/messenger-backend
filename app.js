@@ -8,6 +8,8 @@ const SocketServer = require("./socket.js");
 require("dotenv").config();
 const auth = require("./src/middlewares/auth.middleware");
 
+const { ExpressPeerServer } = require("peer");
+
 // DATABASE
 db.connect();
 
@@ -32,7 +34,17 @@ app.use(cookieParser());
 const http = require("http").createServer(app);
 const { Server } = require("socket.io");
 
-const io = new Server(http);
+const io = new Server(http, {
+  cors: "*",
+});
+
+// const customGenerationFunction = () =>
+//   Math.random().toString(36) + "0000000000000000000".substring(2, 16);
+
+// const peerServer = ExpressPeerServer(http, {
+//   path: "/",
+//   generateClientId: customGenerationFunction,
+// });
 
 io.on("connection", (socket) => {
   console.log(`User connected ${socket.id}`);
@@ -44,6 +56,7 @@ io.on("connection", (socket) => {
 });
 
 // ROUTES
+// app.use("/mypeer", peerServer);
 app.use("/api/auth", require("./src/routes/auth.route"));
 app.use("/api/user", auth, require("./src/routes/user.route"));
 app.use("/api/upload", auth, require("./src/routes/upload.route"));
