@@ -147,6 +147,10 @@ const messageCtrl = {
 
       await newMessage.save();
 
+      await Conversation.findByIdAndUpdate(conversationId, {
+        updatedAt: Date.now,
+      });
+
       res.status(201).json({
         msg: resourceMessenger.msg.success.messageCreate,
         content: newMessage,
