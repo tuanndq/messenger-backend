@@ -18,4 +18,6 @@ router.post("/", messageCtrl.createMsg);
 
 router.patch("/:messageId", messageCtrl.removeMsg);
 
+router.get('/latest-msg/:conversationId', messageCtrl.getTheLast);
+
 module.exports = router;

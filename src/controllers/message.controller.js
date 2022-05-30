@@ -207,6 +207,45 @@ const messageCtrl = {
       });
     }
   },
+
+  getTheLast: async (req, res) => {
+    const conversationId = req.params.conversationId;
+
+    try {
+      const lastMessage = await Message.aggregate([
+        {
+          $match: {
+            conversationId: mongoose.Types.ObjectId(conversationId),
+          },
+        },
+        {
+          $lookup: {
+            from: "users",
+            localField: "senderId",
+            foreignField: "_id",
+            as: "users",
+          },
+        },
+      ])
+        .sort({ createdAt: -1 })
+        .limit(1);
+
+      if (!lastMessage) {
+        return res.status(404).json({
+          devMsg: `Last message: ${resourceMessenger.msg.err.notFound}`,
+          userMsg: resourceMessenger.msg.err.generalUserMsg,
+        });
+      }
+
+      res.status(200).json(lastMessage[0]);
+
+    } catch (err) {
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
 };
 
 module.exports = messageCtrl;
