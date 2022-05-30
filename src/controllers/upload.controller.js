@@ -1,6 +1,16 @@
+require("dotenv").config();
 const { v4: uuidv4 } = require("uuid");
 const firebase = require("../services/firebase");
 const resourceMessenger = require("../utils/resource");
+const cloudinary = require("cloudinary").v2;
+const streamifier = require("streamifier");
+
+cloudinary.config({
+  cloud_name: process.env.CLOUDINARY_NAME,
+  api_key: process.env.CLOUDINARY_API_KEY,
+  api_secret: process.env.CLOUDINARY_API_SECRET,
+  secure: true,
+});
 
 const uploadCtrl = {
   uploadImage: async (req, res) => {
@@ -23,8 +33,9 @@ const uploadCtrl = {
       });
 
       blobWriter.on("finish", () => {
-        let publicUrl = `https://firebasestorage.googleapis.com/v0/b/${firebase.bucket.name
-          }/o/${encodeURIComponent(blob.name)}?alt=media`;
+        let publicUrl = `https://firebasestorage.googleapis.com/v0/b/${
+          firebase.bucket.name
+        }/o/${encodeURIComponent(blob.name)}?alt=media`;
 
         res.status(200).json({
           msg: resourceMessenger.msg.success.uploadFile,
@@ -61,9 +72,10 @@ const uploadCtrl = {
       });
 
       blobWriter.on("finish", () => {
-        let publicUrl = `https://firebasestorage.googleapis.com/v0/b/${firebase.bucket.name
-          }/o/${encodeURIComponent(blob.name)}?alt=media`;
-        
+        let publicUrl = `https://firebasestorage.googleapis.com/v0/b/${
+          firebase.bucket.name
+        }/o/${encodeURIComponent(blob.name)}?alt=media`;
+
         res.status(200).json({
           msg: resourceMessenger.msg.success.uploadFile,
           url: publicUrl,
@@ -78,6 +90,31 @@ const uploadCtrl = {
       });
     }
   },
+
+  uploadImage2: async (req, res) => {
+    try {
+      const result = await streamUpload(req);
+      console.log(result);
+    } catch (e) {
+      console.log(e);
+    }
+  },
+};
+
+const streamUpload = (req) => {
+  return new Promise((resolve, reject) => {
+    let stream = cloudinary.uploader.upload_stream((error, result) => {
+      if (result) {
+        console.log(result);
+        resolve(result);
+      } else {
+        console.log(error);
+        reject(error);
+      }
+    });
+
+    streamifier.createReadStream(req.file.buffer).pipe(stream);
+  });
 };
 
 module.exports = uploadCtrl;

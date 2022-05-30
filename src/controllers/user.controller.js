@@ -140,18 +140,13 @@ const userCtrl = {
 
       console.log(req.body);
 
-      const newUser = await User.findByIdAndUpdate(req.user._id, {
-        lastName: lastName,
-        firstName: firstName,
-        gender: gender,
-        dateOfBirth: dateOfBirth,
-        avatar,
-        wallpaper,
-        address,
-        school,
-        work,
-        bio: bio,
-      });
+      const newUser = await User.findByIdAndUpdate(
+        req.user._id,
+        { ...req.body, fullName: firstName + " " + lastName },
+        {
+          new: true,
+        }
+      );
 
       res.status(200).json({ newUser });
     } catch (err) {

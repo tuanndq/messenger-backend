@@ -13,7 +13,6 @@ const conversationCtrl = {
       }
 
       res.status(200).json({ conversations });
-
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -36,7 +35,6 @@ const conversationCtrl = {
       }
 
       res.status(200).json(conversation);
-
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -50,11 +48,10 @@ const conversationCtrl = {
     const _userId = req.params.userId;
 
     try {
-
       // get all conversation of the user (temporarily)
-      let conversations = await Conversation
-        .find({ members: { $in: [_userId] }, })
-        .sort({ updatedAt: -1 })
+      let conversations = await Conversation.find({
+        members: { $in: [_userId] },
+      }).sort({ updatedAt: -1 });
       // .limit(resourceMessenger.number.defaultConversation);
 
       console.log(conversations);
@@ -64,7 +61,6 @@ const conversationCtrl = {
       }
 
       res.status(200).json({ conversations });
-
     } catch (err) {
       console.log(err);
       return res.status(500).json({
@@ -74,23 +70,24 @@ const conversationCtrl = {
     }
   },
 
-  // Get by 
+  // Get by
   get1vs1: async (req, res) => {
     const { peerA, peerB } = req.query;
 
+    console.log(peerA, peerB);
+
     try {
       let members = [peerA, peerB];
-      const conversation = await Conversation.findOne({
-        title: '1vs1',
+      const conversation = await Conversation.find({
+        title: "1vs1",
         members,
       });
 
-      if (!conversation) {
-        return res.status(204).json(conversation);
+      if (!conversation.length) {
+        return res.status(204).json({ msg: "Conversation is not available!" });
       }
 
       res.status(200).json(conversation);
-
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -117,7 +114,6 @@ const conversationCtrl = {
       }
 
       res.status(200).json({ members });
-
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -147,7 +143,7 @@ const conversationCtrl = {
     }
 
     // Check if duplicated Conversation 1vs1
-    if (title === '1vs1') {
+    if (title === "1vs1") {
       const conversations = await Conversation.find({ title, members });
       console.log(conversations);
       if (conversations.length > 0) {
@@ -167,7 +163,6 @@ const conversationCtrl = {
       await conversation.save();
 
       res.status(201).json(conversation);
-
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
@@ -186,7 +181,6 @@ const conversationCtrl = {
       });
 
       res.status(200).json({ message: "Update conversation successfully!" });
-
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
