@@ -29,7 +29,7 @@ const upload = multer({
 // });
 // const upload = multer({ storage });
 
-router.post("/image", upload.single("image"), uploadCtrl.uploadImage2);
+router.post("/image", upload.single("image"), uploadCtrl.uploadImage);
 
 router.post("/video", upload.single("video"), uploadCtrl.uploadVideo);
 
