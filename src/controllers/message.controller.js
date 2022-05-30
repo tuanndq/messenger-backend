@@ -32,6 +32,25 @@ const messageCtrl = {
     }
   },
 
+  getLastMessages: async (req, res) => {
+    try {
+      const lastMessages = await Message.aggregate([
+        {
+          $group: {
+            _id: "$conversationId",
+          },
+        },
+      ]);
+
+      res.json({ lastMessages });
+    } catch (err) {
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
+
   getDefault: async (req, res) => {
     const { conversationId, offset } = req.query;
     let _offset = parseInt(offset);

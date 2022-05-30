@@ -8,11 +8,13 @@ router.get(
 
 router.get("/conversation/:conversationId", messageCtrl.getDefault);
 
+router.get("/last", messageCtrl.getLastMessages);
+
 router.get("/:msgId", messageCtrl.getById);
 
-router.get('/filter/conversation', messageCtrl.searchMsg);
+router.get("/filter/conversation", messageCtrl.searchMsg);
 
-router.post('/', messageCtrl.createMsg);
+router.post("/", messageCtrl.createMsg);
 
 router.patch("/:messageId", messageCtrl.removeMsg);
 

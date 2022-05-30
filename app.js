@@ -7,8 +7,17 @@ const db = require("./configs/db.config.js");
 const SocketServer = require("./socket.js");
 require("dotenv").config();
 const auth = require("./src/middlewares/auth.middleware");
+const cloudinary = require("cloudinary").v2;
 
 const { ExpressPeerServer } = require("peer");
+
+//  CLOUDINARY
+// cloudinary.config({
+//   cloud_name: process.env.CLOUDINARY_NAME,
+//   api_key: process.env.CLOUDINARY_API_KEY,
+//   api_secret: process.env.CLOUDINARY_API_SECRET,
+//   secure: true,
+// });
 
 // DATABASE
 db.connect();
@@ -59,7 +68,7 @@ io.on("connection", (socket) => {
 // app.use("/mypeer", peerServer);
 app.use("/api/auth", require("./src/routes/auth.route"));
 app.use("/api/user", auth, require("./src/routes/user.route"));
-app.use("/api/upload", auth, require("./src/routes/upload.route"));
+app.use("/api/upload", require("./src/routes/upload.route"));
 app.use("/api/message", auth, require("./src/routes/message.route"));
 app.use("/api/conversation", auth, require("./src/routes/conversation.route"));
 

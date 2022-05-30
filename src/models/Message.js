@@ -18,7 +18,7 @@ const MessageSchema = new mongoose.Schema(
     // text -> 0
     // image -> 1
     // video -> 2
-    // file -> 3
+    // likeIcon -> 3
     msgType: {
       type: Number,
       default: enumMessenger.msgType.text,
@@ -26,7 +26,6 @@ const MessageSchema = new mongoose.Schema(
 
     content: {
       type: String,
-      required: true,
     },
 
     isDeleted: {
