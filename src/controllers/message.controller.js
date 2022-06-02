@@ -38,6 +38,12 @@ const messageCtrl = {
         {
           $group: {
             _id: "$conversationId",
+            content: {
+              $last: "$content",
+            },
+            createAt: {
+              $last: "$createAt",
+            },
           },
         },
       ]);
@@ -238,7 +244,6 @@ const messageCtrl = {
       }
 
       res.status(200).json(lastMessage[0]);
-
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
