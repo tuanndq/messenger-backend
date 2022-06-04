@@ -54,8 +54,6 @@ const conversationCtrl = {
       }).sort({ updatedAt: -1 });
       // .limit(resourceMessenger.number.defaultConversation);
 
-      console.log(conversations);
-
       if (!conversations.length) {
         return res.status(204).json({ conversations });
       }
@@ -73,8 +71,6 @@ const conversationCtrl = {
   // Get by
   get1vs1: async (req, res) => {
     const { peerA, peerB } = req.query;
-
-    console.log(peerA, peerB);
 
     try {
       let members = [peerA, peerB];
@@ -145,7 +141,6 @@ const conversationCtrl = {
     // Check if duplicated Conversation 1vs1
     if (title === "1vs1") {
       const conversations = await Conversation.find({ title, members });
-      console.log(conversations);
       if (conversations.length > 0) {
         return res.status(400).json({
           devMsg: `Conversation: ${resourceMessenger.msg.err.duplicated1vs1}`,

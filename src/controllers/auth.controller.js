@@ -3,7 +3,6 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const otpGenerator = require("otp-generator");
 const nodemailer = require("nodemailer");
-
 const resourceMessenger = require("../utils/resource");
 
 const authCtrl = {
@@ -11,26 +10,13 @@ const authCtrl = {
     try {
       const { email, password, lastName, firstName, gender, dateOfBirth } =
         req.body;
-
       // Validate data
-      if (!email) {
-        return res.status(400).json({
-          devMsg: resourceMessenger.msg.err.emailEmptyMsg,
-          userMsg: resourceMessenger.msg.err.emailEmptyMsg,
-        });
-      }
 
-      if (!validateEmail(email)) {
-        return res.status(400).json({
-          devMsg: resourceMessenger.msg.err.emailErrMsg,
-          userMsg: resourceMessenger.msg.err.emailErrMsg,
-        });
-      }
+      const emailExist = await User.findOne({ email: email });
 
-      if (!password) {
+      if (emailExist) {
         return res.status(400).json({
-          devMsg: resourceMessenger.msg.err.passEmptyMsg,
-          userMsg: resourceMessenger.msg.err.passEmptyMsg,
+          msg: resourceMessenger.msg.err.emailExist,
         });
       }
 
@@ -85,14 +71,6 @@ const authCtrl = {
   login: async (req, res) => {
     try {
       const { email, password } = req.body;
-
-      // Validate email
-      if (!validateEmail(email)) {
-        return res.status(400).json({
-          devMsg: resourceMessenger.msg.err.emailErrMsg,
-          userMsg: resourceMessenger.msg.err.emailErrMsg,
-        });
-      }
 
       const user = await User.findOne({ email });
 
@@ -175,15 +153,16 @@ const authCtrl = {
     });
 
     const transporter = nodemailer.createTransport({
-      service: "hotmail",
+      host: "smtp.ethereal.email",
+      port: 587,
       auth: {
-        user: "qthang1310@outlook.com",
-        pass: "L0r3mSt1ckyP4ss",
+        user: "alexandra.abbott50@ethereal.email",
+        pass: "keB5cPN9fxXA8UGQd8",
       },
     });
 
     const options = {
-      from: "qthang1310@outlook.com",
+      from: "alexandra.abbott50@ethereal.email",
       to: email,
       subject: "OTP Forgot Password",
       text: "You recieved message from " + email,
@@ -232,5 +211,15 @@ const validateEmail = (email) => {
   const regex = resourceMessenger.regex.email;
   return regex.test(String(email).toLowerCase());
 };
+
+function validateDate(testdate) {
+  const date_regex = /^(0[1-9]|1[0-2])\/(0[1-9]|1\d|2\d|3[01])\/(19|20)\d{2}$/;
+  return date_regex.test(testdate);
+}
+
+function validateName(name) {
+  const regex = /^([^0-9]*)$/;
+  return regex.test(name);
+}
 
 module.exports = authCtrl;

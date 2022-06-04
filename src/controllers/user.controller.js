@@ -138,8 +138,6 @@ const userCtrl = {
         bio,
       } = req.body;
 
-      console.log(req.body);
-
       const newUser = await User.findByIdAndUpdate(
         req.user._id,
         { ...req.body, fullName: firstName + " " + lastName },

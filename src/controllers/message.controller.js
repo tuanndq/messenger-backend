@@ -41,8 +41,14 @@ const messageCtrl = {
             content: {
               $last: "$content",
             },
-            createAt: {
-              $last: "$createAt",
+            createdAt: {
+              $last: "$createdAt",
+            },
+            msgType: {
+              $last: "$msgType",
+            },
+            senderId: {
+              $last: "$senderId",
             },
           },
         },
