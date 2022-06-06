@@ -7,7 +7,13 @@ const ConversationSchema = new mongoose.Schema(
       required: true,
     },
 
-    members: [{ type: mongoose.Types.ObjectId, ref: "User" }],
+    members: [
+      {
+        idUser: { type: mongoose.Types.ObjectId, ref: "User" },
+        show: { type: Boolean, default: true },
+        offset: { type: Number, default: 0 },
+      },
+    ],
   },
   {
     timestamps: true,

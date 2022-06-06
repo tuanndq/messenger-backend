@@ -3,6 +3,7 @@ const Conversation = require("./src/models/Conversation");
 const Message = require("./src/models/Message");
 const User = require("./src/models/User");
 const { default: mongoose } = require("mongoose");
+const e = require("express");
 
 const SocketServer = (socket) => {
   // Send and receive message
@@ -32,6 +33,14 @@ const SocketServer = (socket) => {
       },
       {
         $lookup: {
+          from: "conversations",
+          localField: "conversationId",
+          foreignField: "_id",
+          as: "conversation",
+        },
+      },
+      {
+        $lookup: {
           from: "users",
           localField: "senderId",
           foreignField: "_id",
@@ -53,11 +62,9 @@ const SocketServer = (socket) => {
     socket.emit("receive_message", mapGetMessages);
   });
 
-  socket.on("send_message", async (data) => {
+  socket.on("send_message", async ({ messageData: data, currentCon }) => {
     const { room, userName, idUser, type, message } = data;
     // await clientRedis.lpush(roomName, JSON.stringify(data));
-
-    console.log(data);
 
     const newMessage = new Message({
       conversationId: room,
@@ -69,9 +76,22 @@ const SocketServer = (socket) => {
 
     await newMessage.save();
 
-    await Conversation.findByIdAndUpdate(room, {
-      updatedAt: Date.now,
-    });
+    const conversation = await Conversation.findOne();
+
+    const mapMembers = conversation.members.map((e) => ({
+      ...e,
+      show: true,
+    }));
+
+    await Conversation.findOneAndUpdate(
+      { _id: room },
+      {
+        members: mapMembers,
+      },
+      {
+        new: true,
+      }
+    );
 
     socket.to(room).emit("receive_message", data);
   });

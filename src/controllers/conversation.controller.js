@@ -45,13 +45,26 @@ const conversationCtrl = {
 
   // Get by user Id (it is auth id actually)
   getDefault: async (req, res) => {
-    const _userId = req.params.userId;
+    const _userId = ObjectId(req.params.userId);
 
     try {
       // get all conversation of the user (temporarily)
-      let conversations = await Conversation.find({
-        members: { $in: [_userId] },
-      }).sort({ updatedAt: -1 });
+      // let conversations = await Conversation.find({
+      //   "members.$.idUser": _userId,
+      // }).sort({ updatedAt: -1 });
+
+      const conversations = await Conversation.aggregate([
+        { $match: { "members.idUser": _userId } },
+        {
+          $lookup: {
+            from: "messages",
+            localField: "_id",
+            foreignField: "conversationId",
+            as: "cntMessages",
+          },
+        },
+      ]);
+
       // .limit(resourceMessenger.number.defaultConversation);
 
       if (!conversations.length) {
@@ -84,6 +97,30 @@ const conversationCtrl = {
       }
 
       res.status(200).json(conversation);
+    } catch (err) {
+      return res.status(500).json({
+        devMsg: err.message,
+        userMsg: resourceMessenger.msg.err.generalUserMsg,
+      });
+    }
+  },
+
+  deleteConversation: async (req, res) => {
+    try {
+      const conversationId = req.params.conversationId;
+      const offsetMsg = req.query.offset;
+
+      const conversation = await Conversation.updateOne(
+        { _id: conversationId, "members.idUser": req.user._id },
+        {
+          $set: {
+            "members.$.show": false,
+            "members.$.offset": offsetMsg,
+          },
+        }
+      );
+
+      res.status(200).json({ conversation });
     } catch (err) {
       return res.status(500).json({
         devMsg: err.message,
