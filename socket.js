@@ -76,22 +76,16 @@ const SocketServer = (socket) => {
 
     await newMessage.save();
 
-    const conversation = await Conversation.findOne();
+    await Conversation.findOne({ _id: room }).then((doc) => {
+      const mapMembers = doc.members.map((e) => ({
+        ...e,
+        show: true,
+      }));
 
-    const mapMembers = conversation.members.map((e) => ({
-      ...e,
-      show: true,
-    }));
+      doc.members = mapMembers;
 
-    await Conversation.findOneAndUpdate(
-      { _id: room },
-      {
-        members: mapMembers,
-      },
-      {
-        new: true,
-      }
-    );
+      doc.save();
+    });
 
     socket.to(room).emit("receive_message", data);
   });
