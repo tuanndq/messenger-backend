@@ -63,6 +63,11 @@ const conversationCtrl = {
             as: "cntMessages",
           },
         },
+        {
+          $sort: {
+            updatedAt: -1,
+          },
+        },
       ]);
 
       // .limit(resourceMessenger.number.defaultConversation);
