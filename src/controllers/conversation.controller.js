@@ -91,10 +91,10 @@ const conversationCtrl = {
     const { peerA, peerB } = req.query;
 
     try {
-      let members = [peerA, peerB];
       const conversation = await Conversation.find({
         title: "1vs1",
-        members,
+        "members.0.idUser": peerA,
+        "members.1.idUser": peerB,
       });
 
       if (!conversation.length) {

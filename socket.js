@@ -3,7 +3,6 @@ const Conversation = require("./src/models/Conversation");
 const Message = require("./src/models/Message");
 const User = require("./src/models/User");
 const { default: mongoose } = require("mongoose");
-const e = require("express");
 
 const SocketServer = (socket) => {
   // Send and receive message
@@ -64,7 +63,6 @@ const SocketServer = (socket) => {
 
   socket.on("send_message", async ({ messageData: data, currentCon }) => {
     const { room, userName, idUser, type, message } = data;
-    // await clientRedis.lpush(roomName, JSON.stringify(data));
 
     const newMessage = new Message({
       conversationId: room,
@@ -86,6 +84,8 @@ const SocketServer = (socket) => {
 
       doc.save();
     });
+
+    socket.broadcast.emit("last_message", data);
 
     socket.to(room).emit("receive_message", data);
   });
