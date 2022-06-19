@@ -1,28 +1,61 @@
-const { createMsg } = require("./src/controllers/message.controller");
 const Conversation = require("./src/models/Conversation");
 const Message = require("./src/models/Message");
-const User = require("./src/models/User");
 const { default: mongoose } = require("mongoose");
 
-const SocketServer = (socket) => {
-  // Send and receive message
-  // const getRooms = await clientRedis.lrange('listRooms', 0, -1);
-  // socket.emit('show_rooms', getRooms);
+const SocketServer = (socket, users) => {
+  socket.on(
+    "video-call-start",
+    ({ senderId, receiverId, chatBoxId, offer, isVideoCall }) => {
+      const socketReceiver = users.find(
+        (e) => e.userId === receiverId
+      ).socketId;
+      socket.to(socketReceiver).emit("video-call-start", {
+        senderId,
+        receiverId,
+        chatBoxId,
+        offer,
+        isVideoCall,
+      });
+    }
+  );
+
+  socket.on("video-call-stop", ({ senderId, receiverId, chatBoxId }) => {
+    const socketReceiver = users.find((e) => e.userId === receiverId).socketId;
+    socket.to(socketReceiver).emit("video-call-stop", {
+      senderId,
+      receiverId,
+      chatBoxId,
+    });
+  });
+
+  socket.on("video-call-answer", ({ senderId, receiverId, payload }) => {
+    const socketReceiver = users.find((e) => e.userId === receiverId).socketId;
+    socket.to(socketReceiver).emit("video-call-answer", {
+      senderId,
+      receiverId,
+      answer: payload,
+    });
+  });
+
+  socket.on("video-call-candidate", ({ senderId, receiverId, payload }) => {
+    const socketReceiver = users.find((e) => e.userId === receiverId).socketId;
+    socket.to(socketReceiver).emit("video-call-candidate", {
+      senderId,
+      receiverId,
+      candidate: payload,
+    });
+  });
+
+  socket.on("video-call-media-active", ({ receiverId, mic, camera }) => {
+    const socketReceiver = users.find((e) => e.userId === receiverId).socketId;
+    socket.to(socketReceiver).emit("video-call-media-active", {
+      mic,
+      camera,
+    });
+  });
 
   socket.on("join_room", async (room) => {
-    // const foundRoom = getRooms.findIndex((data) => data === room);
-
-    // if (foundRoom === -1) {
-    //   socket.broadcast.emit('show_new_rooms', room);
-
-    //   await clientRedis.lpush('listRooms', room);
-    // }
-
     socket.join(room);
-
-    // const getMessages = (await clientRedis.lrange(room, 0, -1)).map((e) => JSON.parse(e));
-
-    // const getMessages = await Message.find({ room }).sort({ createdAt: -1 });
 
     const messages = await Message.aggregate([
       {

@@ -9,8 +9,6 @@ require("dotenv").config();
 const auth = require("./src/middlewares/auth.middleware");
 const cloudinary = require("cloudinary").v2;
 
-const { ExpressPeerServer } = require("peer");
-
 //  CLOUDINARY
 // cloudinary.config({
 //   cloud_name: process.env.CLOUDINARY_NAME,
@@ -47,17 +45,32 @@ const io = new Server(http, {
   cors: "*",
 });
 
-// const customGenerationFunction = () =>
-//   Math.random().toString(36) + "0000000000000000000".substring(2, 16);
+// io.use((socket, next) => {
+//   const userID = socket.handshake.auth.userId;
 
-// const peerServer = ExpressPeerServer(http, {
-//   path: "/",
-//   generateClientId: customGenerationFunction,
+//   console.log("USER ID >>>>", userID);
+//   if (!userID) {
+//     next(new Error("invalid userId"));
+//   }
+//   socket.userId = userID;
+//   next();
 // });
+
+let users = [];
 
 io.on("connection", (socket) => {
   console.log(`User connected ${socket.id}`);
-  SocketServer(socket);
+
+  const userID = socket.handshake.auth.userId;
+
+  if (userID) {
+    users.push({
+      socketId: socket.id,
+      userId: userID,
+    });
+
+    SocketServer(socket, users);
+  }
 
   socket.on("disconnect", () => {
     console.log(`User disconnected ${socket.id}`);
@@ -65,7 +78,6 @@ io.on("connection", (socket) => {
 });
 
 // ROUTES
-// app.use("/mypeer", peerServer);
 app.use("/api/auth", require("./src/routes/auth.route"));
 app.use("/api/user", auth, require("./src/routes/user.route"));
 app.use("/api/upload", require("./src/routes/upload.route"));
