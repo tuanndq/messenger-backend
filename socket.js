@@ -5,49 +5,68 @@ const { default: mongoose } = require("mongoose");
 const SocketServer = (socket, users) => {
   socket.on(
     "video-call-start",
-    ({ senderId, receiverId, chatBoxId, offer, isVideoCall }) => {
-      const socketReceiver = users.find(
-        (e) => e.userId === receiverId
-      ).socketId;
+    ({ sender, receiver, conversationId, offer, isVideoCall }) => {
+      const socketReceiver = users[receiver._id];
+
+      console.log("START >>>>", socketReceiver);
       socket.to(socketReceiver).emit("video-call-start", {
-        senderId,
-        receiverId,
-        chatBoxId,
+        sender,
+        receiver,
+        conversationId,
         offer,
         isVideoCall,
       });
     }
   );
 
-  socket.on("video-call-stop", ({ senderId, receiverId, chatBoxId }) => {
-    const socketReceiver = users.find((e) => e.userId === receiverId).socketId;
-    socket.to(socketReceiver).emit("video-call-stop", {
-      senderId,
-      receiverId,
-      chatBoxId,
-    });
-  });
+  socket.on(
+    "video-call-stop",
+    ({ sender, receiver, conversationId, isCaller }) => {
+      let socketReceiver = null;
+      if (isCaller) {
+        socketReceiver = users[receiver._id];
+      } else {
+        socketReceiver = users[sender._id];
+      }
 
-  socket.on("video-call-answer", ({ senderId, receiverId, payload }) => {
-    const socketReceiver = users.find((e) => e.userId === receiverId).socketId;
-    socket.to(socketReceiver).emit("video-call-answer", {
-      senderId,
-      receiverId,
+      socket.to(socketReceiver).emit("video-call-stop", {
+        sender,
+        receiver,
+        conversationId,
+      });
+    }
+  );
+
+  socket.on("video-call-answer", ({ sender, receiver, payload }) => {
+    // const socketReceiver = users.find((e) => e.userId === receiver)?.socketId;
+    console.log(sender, receiver, payload);
+    socket.to(users[receiver._id]).emit("video-call-answer", {
+      sender,
+      receiver,
       answer: payload,
     });
   });
 
-  socket.on("video-call-candidate", ({ senderId, receiverId, payload }) => {
-    const socketReceiver = users.find((e) => e.userId === receiverId).socketId;
-    socket.to(socketReceiver).emit("video-call-candidate", {
-      senderId,
-      receiverId,
-      candidate: payload,
-    });
-  });
+  socket.on(
+    "video-call-candidate",
+    ({ sender, receiver, isCaller, payload }) => {
+      let socketReceiver = null;
+      if (isCaller) {
+        socketReceiver = users[receiver._id];
+      } else {
+        socketReceiver = users[sender._id];
+      }
 
-  socket.on("video-call-media-active", ({ receiverId, mic, camera }) => {
-    const socketReceiver = users.find((e) => e.userId === receiverId).socketId;
+      socket.to(socketReceiver).emit("video-call-candidate", {
+        sender,
+        receiver,
+        candidate: payload,
+      });
+    }
+  );
+
+  socket.on("video-call-media-active", ({ receiver, mic, camera }) => {
+    const socketReceiver = users[receiver._id];
     socket.to(socketReceiver).emit("video-call-media-active", {
       mic,
       camera,

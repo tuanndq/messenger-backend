@@ -45,32 +45,26 @@ const io = new Server(http, {
   cors: "*",
 });
 
-// io.use((socket, next) => {
-//   const userID = socket.handshake.auth.userId;
+io.use((socket, next) => {
+  const userID = socket.handshake.auth.userId || "default";
 
-//   console.log("USER ID >>>>", userID);
-//   if (!userID) {
-//     next(new Error("invalid userId"));
-//   }
-//   socket.userId = userID;
-//   next();
-// });
+  console.log("USER ID >>>>", userID);
+  if (!userID) {
+    return next(new Error("invalid userId"));
+  }
+  socket.userId = userID;
+  next();
+});
 
-let users = [];
+let users = {};
 
 io.on("connection", (socket) => {
   console.log(`User connected ${socket.id}`);
+  users[socket.userId] = socket.id;
 
-  const userID = socket.handshake.auth.userId;
+  console.log(users);
 
-  if (userID) {
-    users.push({
-      socketId: socket.id,
-      userId: userID,
-    });
-
-    SocketServer(socket, users);
-  }
+  SocketServer(socket, users);
 
   socket.on("disconnect", () => {
     console.log(`User disconnected ${socket.id}`);
