@@ -156,13 +156,13 @@ const authCtrl = {
       host: "smtp.ethereal.email",
       port: 587,
       auth: {
-        user: "alexandra.abbott50@ethereal.email",
-        pass: "keB5cPN9fxXA8UGQd8",
+        user: "delta.watsica42@ethereal.email",
+        pass: "RrxUpw3mJS83na42tp",
       },
     });
 
     const options = {
-      from: "alexandra.abbott50@ethereal.email",
+      from: "delta.watsica42@ethereal.email",
       to: email,
       subject: "OTP Forgot Password",
       text: "You recieved message from " + email,
